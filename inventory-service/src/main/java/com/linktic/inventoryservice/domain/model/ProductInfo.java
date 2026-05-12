@@ -1,17 +1,28 @@
 package com.linktic.inventoryservice.domain.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 public class ProductInfo {
-    private UUID id;
-    private String name;
-    private BigDecimal price;
+    private final UUID id;
+    private final String name;
+    private final BigDecimal price;
+
+    public ProductInfo(UUID id, String name, BigDecimal price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
 }

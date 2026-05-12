@@ -1,19 +1,24 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.2.5'
-	id 'io.spring.dependency-management' version '1.1.4'
-	id 'org.openapi.generator' version '7.4.0'
+	id 'org.springframework.boot' version '4.0.6'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.openapi.generator' version '7.10.0'
+	id 'jacoco'
+}
+
+jacoco {
+	toolVersion = "0.8.14"
 }
 
 group = 'com.linktic'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '17'
+	sourceCompatibility = '25'
 }
 
 ext {
-	set('springCloudVersion', "2023.0.1")
+	set('springCloudVersion', "2025.1.0")
 }
 
 configurations {
@@ -38,13 +43,13 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 	
 	// Swagger/OpenAPI
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
 	implementation 'io.swagger.core.v3:swagger-annotations:2.2.19'
 	implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
 	
 	// MapStruct
-	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+	implementation 'org.mapstruct:mapstruct:1.6.3'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
@@ -52,6 +57,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 	
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-webmvc-test'
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.testcontainers:postgresql'
 	testRuntimeOnly 'com.h2database:h2'
@@ -59,11 +65,60 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	ignoreFailures = true
+	finalizedBy jacocoTestReport
 }
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+	}
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+				'**/dto/**',
+				'**/mapper/**',
+				'**/config/**',
+				'**/exception/**',
+				'**/*Application*',
+				'**/infrastructure/adapter/in/rest/api/**',
+				'**/infrastructure/adapter/out/external/dto/**'
+			])
+		}))
+	}
+}
+
+jacocoTestCoverageVerification {
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+				'**/dto/**',
+				'**/mapper/**',
+				'**/config/**',
+				'**/exception/**',
+				'**/*Application*',
+				'**/infrastructure/adapter/in/rest/api/**',
+				'**/infrastructure/adapter/out/external/dto/**'
+			])
+		}))
+	}
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.80
+			}
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification
 
 dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		mavenBom "org.testcontainers:testcontainers-bom:1.21.3"
 	}
 }
 

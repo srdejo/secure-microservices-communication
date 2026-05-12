@@ -24,11 +24,6 @@ public class ProductUseCase implements ProductServicePort {
     public Product createProduct(Product product) {
         log.info("Creating product: {}", product.getName());
         
-        // 1. Generate ID if not present
-        if (product.getId() == null) {
-            product.setId(UUID.randomUUID());
-        }
-        
         log.debug("Initializing inventory for product ID: {}", product.getId());
         
         // 2. Initialize inventory (will throw exception if fails)

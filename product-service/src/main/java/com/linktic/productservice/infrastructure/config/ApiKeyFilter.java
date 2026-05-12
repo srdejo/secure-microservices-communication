@@ -1,6 +1,6 @@
 package com.linktic.productservice.infrastructure.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,14 +14,8 @@ import java.io.IOException;
 @Component
 public class ApiKeyFilter extends OncePerRequestFilter {
 
-    private final ObjectMapper objectMapper;
-
     @Value("${api.key}")
     private String apiKey;
-
-    public ApiKeyFilter(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

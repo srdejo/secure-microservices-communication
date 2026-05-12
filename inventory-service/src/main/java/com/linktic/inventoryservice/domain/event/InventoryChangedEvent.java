@@ -1,16 +1,21 @@
 package com.linktic.inventoryservice.domain.event;
 
-import lombok.Getter;
-import org.springframework.context.ApplicationEvent;
+import java.util.UUID;
 
-@Getter
-public class InventoryChangedEvent extends ApplicationEvent {
-    private final Long productId;
+public class InventoryChangedEvent {
+    private final UUID productId;
     private final Integer newQuantity;
 
-    public InventoryChangedEvent(Object source, Long productId, Integer newQuantity) {
-        super(source);
+    public InventoryChangedEvent(UUID productId, Integer newQuantity) {
         this.productId = productId;
         this.newQuantity = newQuantity;
+    }
+
+    public UUID getProductId() {
+        return productId;
+    }
+
+    public Integer getNewQuantity() {
+        return newQuantity;
     }
 }

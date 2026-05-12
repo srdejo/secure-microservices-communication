@@ -1,8 +1,11 @@
 package com.linktic.inventoryservice.application.usecase;
 
+import com.linktic.inventoryservice.domain.event.InventoryChangedEvent;
 import com.linktic.inventoryservice.domain.model.Inventory;
 import com.linktic.inventoryservice.domain.model.Purchase;
 import com.linktic.inventoryservice.domain.model.ProductInfo;
+import com.linktic.inventoryservice.domain.model.InventoryWithProduct;
+import java.util.stream.Collectors;
 import com.linktic.inventoryservice.domain.port.InventoryPersistencePort;
 import com.linktic.inventoryservice.domain.port.PurchasePersistencePort;
 import com.linktic.inventoryservice.domain.port.ProductClientPort;
@@ -29,10 +32,22 @@ public class InventoryUseCase implements InventoryServicePort {
     private final ProductClientPort productClientPort;
     private final ApplicationEventPublisher eventPublisher;
 
+
     @Transactional(readOnly = true)
-    public List<Inventory> getAllInventory() {
-        log.info("Fetching all inventory items");
-        return inventoryPersistencePort.findAll();
+    public List<InventoryWithProduct> getAllInventoryWithProducts() {
+        log.info("Fetching all inventory items with product info");
+        List<Inventory> inventories = inventoryPersistencePort.findAll();
+        List<ProductInfo> products = productClientPort.getAllProducts();
+        
+        return inventories.stream()
+                .map(inventory -> {
+                    ProductInfo info = products.stream()
+                            .filter(p -> p.getId().equals(inventory.getProductId()))
+                            .findFirst()
+                            .orElse(null);
+                    return new InventoryWithProduct(inventory, info);
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -42,21 +57,23 @@ public class InventoryUseCase implements InventoryServicePort {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Inventory> getInventoryByProductId(UUID productId) {
+    public Optional<InventoryWithProduct> getInventoryByProductId(UUID productId) {
         log.info("Fetching inventory for product ID: {}", productId);
-        Optional<Inventory> localInventory = inventoryPersistencePort.findByProductId(productId);
         
-        if (localInventory.isPresent()) {
-            return localInventory;
+        // 1. Fetch product info first
+        Optional<ProductInfo> productInfo = productClientPort.getProductById(productId);
+        
+        if (productInfo.isEmpty()) {
+            // Check if we have local inventory even if product service is down or product not found there
+            // But usually, if product doesn't exist, inventory shouldn't either (or at least shouldn't be returned as valid)
+            return Optional.empty();
         }
 
-        // If not found locally, check if product exists in external service
-        log.debug("Product {} not found in local inventory. Checking external product service.", productId);
-        return productClientPort.getProductById(productId)
-                .map(product -> {
-                    log.info("Product {} exists in external service. Returning virtual inventory with 0 stock.", productId);
-                    return new Inventory(productId, 0);
-                });
+        // 2. Fetch inventory (or return virtual 0)
+        Inventory inventory = inventoryPersistencePort.findByProductId(productId)
+                .orElse(new Inventory(productId, 0));
+                
+        return Optional.of(new InventoryWithProduct(inventory, productInfo.get()));
     }
 
     @Transactional
@@ -69,7 +86,7 @@ public class InventoryUseCase implements InventoryServicePort {
         Inventory saved = inventoryPersistencePort.save(inventory);
         
         log.debug("Inventory updated successfully for product ID: {}", productId);
-        eventPublisher.publishEvent(saved);
+        eventPublisher.publishEvent(new InventoryChangedEvent(saved.getProductId(), saved.getQuantity()));
         
         return saved;
     }

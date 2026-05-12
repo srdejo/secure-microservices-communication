@@ -8,21 +8,17 @@ import com.linktic.productservice.domain.exception.InvalidProductDataException;
  * Domain model for Product.
  */
 public class Product {
-    private UUID id;
+    private final UUID id;
     private String name;
     private String description;
     private BigDecimal price;
 
     public Product(UUID id, String name, String description, BigDecimal price) {
         validatePrice(price);
-        this.id = id;
+        this.id = id != null ? id : UUID.randomUUID();
         this.name = name;
         this.description = description;
         this.price = price;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public UUID getId() {
