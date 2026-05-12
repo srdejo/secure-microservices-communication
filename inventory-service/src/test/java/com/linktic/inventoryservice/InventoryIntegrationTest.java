@@ -7,13 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
@@ -24,19 +20,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Testcontainers
+@TestPropertySource(properties = {
+    "spring.datasource.url=jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
+    "spring.datasource.username=sa",
+    "spring.datasource.password=",
+    "spring.flyway.clean-disabled=false",
+    "spring.jpa.hibernate.ddl-auto=update",
+    "api.key=test-api-key"
+})
 class InventoryIntegrationTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("api.key", () -> "test-api-key");
-    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -51,6 +43,13 @@ class InventoryIntegrationTest {
     void shouldReturnInventory_WhenExists() throws Exception {
         UUID productId = UUID.randomUUID();
         inventoryPersistencePort.save(new Inventory(productId, 50));
+        
+        // Mock product service to return the product info, otherwise controller returns 404
+        var productInfo = new com.linktic.inventoryservice.domain.model.ProductInfo(
+            productId, "Test Product", java.math.BigDecimal.valueOf(100.0)
+        );
+        org.mockito.Mockito.when(productClientPort.getProductById(productId))
+                .thenReturn(java.util.Optional.of(productInfo));
 
         mockMvc.perform(get("/api/v1/inventory/{productId}", productId)
                         .header("X-API-KEY", "test-api-key")
@@ -79,7 +78,7 @@ class InventoryIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(purchaseJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.attributes.total").value(200.0))
+                .andExpect(jsonPath("$.data.attributes.totalPrice").value(200.0))
                 .andExpect(jsonPath("$.data.attributes.quantity").value(2));
     }
 
