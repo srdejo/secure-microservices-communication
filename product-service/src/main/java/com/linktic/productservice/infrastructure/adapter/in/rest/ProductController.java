@@ -29,7 +29,7 @@ public class ProductController implements ProductApi {
     }
 
     @Override
-    public ResponseEntity<JsonApiResponseProductDTO> getProductById(@PathVariable("id") UUID id) {
+    public ResponseEntity<JsonApiResponseProductDTO> getProductById(@PathVariable UUID id) {
         return productServicePort.getProductById(id)
                 .map(productMapper::toJsonResponse)
                 .map(ResponseEntity::ok)

@@ -8,7 +8,8 @@ import com.linktic.inventoryservice.infrastructure.adapter.out.persistence.Inven
 import com.linktic.inventoryservice.infrastructure.adapter.out.persistence.PurchaseEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import java.time.ZoneOffset;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -96,12 +97,12 @@ public interface InventoryMapper {
         return response;
     }
 
-    private java.util.Map<String, Object> mapToProductResource(ProductInfo product) {
-        java.util.Map<String, Object> resource = new java.util.HashMap<>();
+    private Map<String, Object> mapToProductResource(ProductInfo product) {
+        Map<String, Object> resource = new HashMap<>();
         resource.put("type", "products");
         resource.put("id", product.getId().toString());
         
-        java.util.Map<String, Object> attributes = new java.util.HashMap<>();
+        Map<String, Object> attributes = new HashMap<>();
         attributes.put("name", product.getName());
         attributes.put("price", product.getPrice());
         

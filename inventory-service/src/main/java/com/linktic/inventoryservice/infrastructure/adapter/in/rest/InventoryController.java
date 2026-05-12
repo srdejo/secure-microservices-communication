@@ -32,7 +32,7 @@ public class InventoryController implements InventoryApi {
     }
 
     @Override
-    public ResponseEntity<JsonApiResponseInventoryDTO> getInventory(@PathVariable("productId") UUID productId) {
+    public ResponseEntity<JsonApiResponseInventoryDTO> getInventory(@PathVariable UUID productId) {
         return inventoryUseCase.getInventoryByProductId(productId)
                 .map(inventory -> {
                     // Fetch product info for 'included'

@@ -28,7 +28,9 @@ public class ApiKeyFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String requestPath = request.getRequestURI();
-        if (requestPath.contains("/swagger-ui") || requestPath.contains("/v3/api-docs")) {
+        if (requestPath.contains("/swagger-ui") || 
+            requestPath.contains("/v3/api-docs") || 
+            requestPath.contains("/actuator/health")) {
             filterChain.doFilter(request, response);
             return;
         }
