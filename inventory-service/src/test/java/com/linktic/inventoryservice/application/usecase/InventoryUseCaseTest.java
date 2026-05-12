@@ -48,7 +48,7 @@ class InventoryUseCaseTest {
     @BeforeEach
     void setUp() {
         productId = UUID.randomUUID();
-        sampleProduct = new ProductInfo(productId, "Test Product", new BigDecimal("50.00"));
+        sampleProduct = new ProductInfo(productId, "Test Product", "Test Description", new BigDecimal("50.00"));
         sampleInventory = new Inventory(productId, 10);
     }
 
@@ -174,7 +174,7 @@ class InventoryUseCaseTest {
     @Test
     void getPurchaseHistory() {
         // Arrange
-        Purchase purchase = new Purchase(UUID.randomUUID(), productId, "Test", 2, BigDecimal.TEN, java.time.LocalDateTime.now());
+        Purchase purchase = new Purchase(UUID.randomUUID(), productId, "Test", "Test Description", 2, BigDecimal.TEN, java.time.LocalDateTime.now());
         when(purchasePersistencePort.findAll()).thenReturn(java.util.List.of(purchase));
 
         // Act

@@ -119,6 +119,7 @@ public class InventoryUseCase implements InventoryServicePort {
                 UUID.randomUUID(),
                 productId,
                 product.getName(),
+                product.getDescription(),
                 quantity,
                 total,
                 LocalDateTime.now()

@@ -58,9 +58,29 @@ En lugar de perseguir un porcentaje de cobertura de líneas de código (aunque s
 
 ## 3. Ejecución de Pruebas
 
-Para ejecutar todas las pruebas del proyecto:
+Para ejecutar las pruebas unitarias y de integración, navega a la carpeta de cada microservicio y ejecuta:
 
 ```bash
-# En la raíz del proyecto o en cada microservicio
-mvn test
+# En product-service o inventory-service
+./gradlew test
 ```
+
+Para ejecutar todos los tests desde la raíz (si se desea automatizar):
+```bash
+# Linux/macOS
+./product-service/gradlew test && ./inventory-service/gradlew test
+
+# Windows (PowerShell)
+cd product-service; ./gradlew test; cd ../inventory-service; ./gradlew test
+```
+
+---
+
+## 4. Reportes de Cobertura (JaCoCo)
+
+Una vez ejecutadas las pruebas, puedes visualizar el detalle de la cobertura abriendo los siguientes archivos en tu navegador:
+
+- **Product Service**: [Ver Reporte JaCoCo](../product-service/build/reports/jacoco/test/html/index.html)
+- **Inventory Service**: [Ver Reporte JaCoCo](../inventory-service/build/reports/jacoco/test/html/index.html)
+
+*Nota: Los reportes se generan automáticamente en la carpeta `build/reports/jacoco/test/html/` tras ejecutar el comando de test.*

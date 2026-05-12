@@ -104,6 +104,7 @@ public interface InventoryMapper {
         
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("name", product.getName());
+        attributes.put("description", product.getDescription());
         attributes.put("price", product.getPrice());
         
         resource.put("attributes", attributes);

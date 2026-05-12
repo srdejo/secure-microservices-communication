@@ -47,7 +47,7 @@ class InventoryControllerTest {
     void getInventoryByProductId() throws Exception {
         UUID productId = UUID.randomUUID();
         Inventory inventory = new Inventory(productId, 10);
-        ProductInfo productInfo = new ProductInfo(productId, "Laptop", BigDecimal.TEN);
+        ProductInfo productInfo = new ProductInfo(productId, "Laptop", "High-end laptop", BigDecimal.TEN);
         InventoryWithProduct item = new InventoryWithProduct(inventory, productInfo);
         
         Mockito.when(inventoryUseCase.getInventoryByProductId(productId)).thenReturn(Optional.of(item));
@@ -79,7 +79,7 @@ class InventoryControllerTest {
         request.setProductId(UUID.randomUUID());
         request.setQuantity(2);
 
-        Purchase purchase = new Purchase(UUID.randomUUID(), request.getProductId(), "Laptop", 2, BigDecimal.TEN, LocalDateTime.now());
+        Purchase purchase = new Purchase(UUID.randomUUID(), request.getProductId(), "Laptop", "High-end laptop", 2, BigDecimal.TEN, LocalDateTime.now());
         Mockito.when(inventoryUseCase.processPurchase(any(), any())).thenReturn(purchase);
         Mockito.when(inventoryMapper.toJsonResponse(any(Purchase.class))).thenReturn(new JsonApiResponsePurchaseDTO());
 

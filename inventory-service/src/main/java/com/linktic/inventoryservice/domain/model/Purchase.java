@@ -13,15 +13,17 @@ public class Purchase {
     private final UUID id;
     private final UUID productId;
     private final String productName;
+    private final String productDescription;
     private final Integer quantity;
     private final BigDecimal totalPrice;
     private final LocalDateTime timestamp;
 
-    public Purchase(UUID id, UUID productId, String productName, Integer quantity, BigDecimal totalPrice, LocalDateTime timestamp) {
+    public Purchase(UUID id, UUID productId, String productName, String productDescription, Integer quantity, BigDecimal totalPrice, LocalDateTime timestamp) {
         validate(productId, quantity, totalPrice);
         this.id = id != null ? id : UUID.randomUUID();
         this.productId = productId;
         this.productName = productName;
+        this.productDescription = productDescription;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
         this.timestamp = timestamp != null ? timestamp : LocalDateTime.now();
@@ -45,6 +47,10 @@ public class Purchase {
 
     public String getProductName() {
         return productName;
+    }
+
+    public String getProductDescription() {
+        return productDescription;
     }
 
     public Integer getQuantity() {

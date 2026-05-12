@@ -46,7 +46,7 @@ class InventoryIntegrationTest {
         
         // Mock product service to return the product info, otherwise controller returns 404
         var productInfo = new com.linktic.inventoryservice.domain.model.ProductInfo(
-            productId, "Test Product", java.math.BigDecimal.valueOf(100.0)
+            productId, "Test Product", "Test Description", java.math.BigDecimal.valueOf(100.0)
         );
         org.mockito.Mockito.when(productClientPort.getProductById(productId))
                 .thenReturn(java.util.Optional.of(productInfo));
@@ -66,7 +66,7 @@ class InventoryIntegrationTest {
 
         // Mock external product service response
         var productInfo = new com.linktic.inventoryservice.domain.model.ProductInfo(
-            productId, "Test Product", java.math.BigDecimal.valueOf(100.0)
+            productId, "Test Product", "Test Description", java.math.BigDecimal.valueOf(100.0)
         );
         org.mockito.Mockito.when(productClientPort.getProductById(productId))
                 .thenReturn(java.util.Optional.of(productInfo));
@@ -79,6 +79,7 @@ class InventoryIntegrationTest {
                         .content(purchaseJson))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.data.attributes.totalPrice").value(200.0))
+                .andExpect(jsonPath("$.data.attributes.productDescription").value("Test Description"))
                 .andExpect(jsonPath("$.data.attributes.quantity").value(2));
     }
 

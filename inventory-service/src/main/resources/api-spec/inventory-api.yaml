@@ -146,6 +146,8 @@ components:
           format: uuid
         productName:
           type: string
+        productDescription:
+          type: string
         quantity:
           type: integer
         totalPrice:

@@ -24,7 +24,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
         String requestPath = request.getRequestURI();
         if (requestPath.contains("/swagger-ui") || 
             requestPath.contains("/v3/api-docs") || 
-            requestPath.contains("/actuator/health")) {
+            requestPath.contains("/actuator")) {
             filterChain.doFilter(request, response);
             return;
         }
