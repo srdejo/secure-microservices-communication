@@ -1,0 +1,206 @@
+openapi: 3.0.3
+info:
+  title: Inventory Service API
+  version: 1.0.0
+servers:
+  - url: /
+security:
+  - ApiKeyAuth: []
+paths:
+  /api/v1/inventory:
+    get:
+      tags:
+        - inventory
+      summary: List all inventory
+      operationId: getAllInventory
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonApiResponseInventoryList'
+  /api/v1/inventory/{productId}:
+    get:
+      tags:
+        - inventory
+      summary: Get inventory by product ID
+      operationId: getInventory
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonApiResponseInventory'
+        '404':
+          description: Not Found
+    patch:
+      tags:
+        - inventory
+      summary: Update inventory quantity
+      operationId: updateInventoryQuantity
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quantity
+              properties:
+                quantity:
+                  type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+  /api/v1/inventory/purchase:
+    post:
+      tags:
+        - inventory
+      summary: Process a purchase
+      operationId: processPurchase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonApiResponsePurchase'
+  /api/v1/inventory/purchases:
+    get:
+      tags:
+        - inventory
+      summary: Get purchase history
+      operationId: getPurchaseHistory
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonApiResponsePurchaseList'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  schemas:
+    Inventory:
+      type: object
+      required:
+        - productId
+        - quantity
+      properties:
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+    PurchaseRequest:
+      type: object
+      required:
+        - productId
+        - quantity
+      properties:
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+    PurchaseResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        productId:
+          type: string
+          format: uuid
+        productName:
+          type: string
+        quantity:
+          type: integer
+        totalPrice:
+          type: number
+          format: double
+        timestamp:
+          type: string
+          format: date-time
+    JsonApiResponsePurchase:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/JsonApiDataPurchase'
+    JsonApiResponsePurchaseList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/JsonApiDataPurchase'
+    JsonApiDataPurchase:
+      type: object
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+        attributes:
+          $ref: '#/components/schemas/PurchaseResponse'
+    JsonApiResponseInventory:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/JsonApiDataInventory'
+        included:
+          type: array
+          items:
+            type: object
+    JsonApiResponseInventoryList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/JsonApiDataInventory'
+        included:
+          type: array
+          items:
+            type: object
+    JsonApiDataInventory:
+      type: object
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+        attributes:
+          $ref: '#/components/schemas/Inventory'

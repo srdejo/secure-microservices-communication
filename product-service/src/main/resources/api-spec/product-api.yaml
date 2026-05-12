@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: Product Service API
+  version: 1.0.0
+servers:
+  - url: /
+security:
+  - ApiKeyAuth: []
+paths:
+  /api/v1/products:
+    post:
+      tags:
+        - product
+      summary: Create a new product
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonApiResponseProduct'
+    get:
+      tags:
+        - product
+      summary: List all products
+      operationId: getAllProducts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonApiResponseProductList'
+  /api/v1/products/{id}:
+    get:
+      tags:
+        - product
+      summary: Get product by ID
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonApiResponseProduct'
+        '404':
+          description: Not Found
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  schemas:
+    Product:
+      type: object
+      required:
+        - name
+        - price
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+        description:
+          type: string
+    JsonApiResponseProduct:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/JsonApiDataProduct'
+    JsonApiDataProduct:
+      type: object
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+        attributes:
+          $ref: '#/components/schemas/Product'
+    JsonApiResponseProductList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/JsonApiDataProduct'
