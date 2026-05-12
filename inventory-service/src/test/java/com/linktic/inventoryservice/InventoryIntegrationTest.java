@@ -51,7 +51,7 @@ class InventoryIntegrationTest {
         org.mockito.Mockito.when(productClientPort.getProductById(productId))
                 .thenReturn(java.util.Optional.of(productInfo));
 
-        mockMvc.perform(get("/api/v1/inventory/{productId}", productId)
+        mockMvc.perform(get("/api/v1/inventory/{product_id}", productId)
                         .header("X-API-KEY", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -71,21 +71,21 @@ class InventoryIntegrationTest {
         org.mockito.Mockito.when(productClientPort.getProductById(productId))
                 .thenReturn(java.util.Optional.of(productInfo));
 
-        String purchaseJson = "{\"productId\": \"" + productId + "\", \"quantity\": 2}";
+        String purchaseJson = "{\"product_id\": \"" + productId + "\", \"quantity\": 2}";
 
         mockMvc.perform(post("/api/v1/inventory/purchase")
                         .header("X-API-KEY", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(purchaseJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.attributes.totalPrice").value(200.0))
-                .andExpect(jsonPath("$.data.attributes.productDescription").value("Test Description"))
+                .andExpect(jsonPath("$.data.attributes.total_price").value(200.0))
+                .andExpect(jsonPath("$.data.attributes.product_description").value("Test Description"))
                 .andExpect(jsonPath("$.data.attributes.quantity").value(2));
     }
 
     @Test
     void shouldReturn401_WhenApiKeyMissing() throws Exception {
-        mockMvc.perform(get("/api/v1/inventory/{productId}", UUID.randomUUID())
+        mockMvc.perform(get("/api/v1/inventory/{product_id}", UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }

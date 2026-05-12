@@ -53,7 +53,7 @@ class InventoryControllerTest {
         Mockito.when(inventoryUseCase.getInventoryByProductId(productId)).thenReturn(Optional.of(item));
         Mockito.when(inventoryMapper.toInventoryResponse(any(), any())).thenReturn(new JsonApiResponseInventoryDTO());
 
-        mockMvc.perform(get("/api/v1/inventory/{productId}", productId))
+        mockMvc.perform(get("/api/v1/inventory/{product_id}", productId))
                 .andExpect(status().isOk());
     }
 
@@ -67,7 +67,7 @@ class InventoryControllerTest {
         Mockito.when(inventoryUseCase.updateInventory(eq(productId), eq(5))).thenReturn(inventory);
         Mockito.when(inventoryMapper.toDto(any(Inventory.class))).thenReturn(new InventoryDTO());
 
-        mockMvc.perform(patch("/api/v1/inventory/{productId}", productId)
+        mockMvc.perform(patch("/api/v1/inventory/{product_id}", productId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());

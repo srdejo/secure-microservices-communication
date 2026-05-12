@@ -38,7 +38,7 @@ public class InventoryController implements InventoryApi {
     }
 
     @Override
-    public ResponseEntity<JsonApiResponseInventoryDTO> getInventory(@PathVariable UUID productId) {
+    public ResponseEntity<JsonApiResponseInventoryDTO> getInventory(@PathVariable("product_id") UUID productId) {
         return inventoryUseCase.getInventoryByProductId(productId)
                 .map(item -> inventoryMapper.toInventoryResponse(item.inventory(), item.productInfo()))
                 .map(ResponseEntity::ok)
@@ -58,7 +58,7 @@ public class InventoryController implements InventoryApi {
     }
 
     @Override
-    public ResponseEntity<InventoryDTO> updateInventoryQuantity(@PathVariable("productId") UUID productId,
+    public ResponseEntity<InventoryDTO> updateInventoryQuantity(@PathVariable("product_id") UUID productId,
             @RequestBody UpdateInventoryQuantityRequestDTO request) {
         Inventory updated = inventoryUseCase.updateInventory(productId, request.getQuantity());
         return ResponseEntity.ok(inventoryMapper.toDto(updated));

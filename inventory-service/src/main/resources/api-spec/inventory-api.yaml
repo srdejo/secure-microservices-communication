@@ -20,14 +20,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/JsonApiResponseInventoryList'
-  /api/v1/inventory/{productId}:
+  /api/v1/inventory/{product_id}:
     get:
       tags:
         - inventory
       summary: Get inventory by product ID
       operationId: getInventory
       parameters:
-        - name: productId
+        - name: product_id
           in: path
           required: true
           schema:
@@ -48,7 +48,7 @@ paths:
       summary: Update inventory quantity
       operationId: updateInventoryQuantity
       parameters:
-        - name: productId
+        - name: product_id
           in: path
           required: true
           schema:
@@ -115,10 +115,10 @@ components:
     Inventory:
       type: object
       required:
-        - productId
+        - product_id
         - quantity
       properties:
-        productId:
+        product_id:
           type: string
           format: uuid
         quantity:
@@ -126,10 +126,10 @@ components:
     PurchaseRequest:
       type: object
       required:
-        - productId
+        - product_id
         - quantity
       properties:
-        productId:
+        product_id:
           type: string
           format: uuid
         quantity:
@@ -141,16 +141,16 @@ components:
           type: string
           format: uuid
           readOnly: true
-        productId:
+        product_id:
           type: string
           format: uuid
-        productName:
+        product_name:
           type: string
-        productDescription:
+        product_description:
           type: string
         quantity:
           type: integer
-        totalPrice:
+        total_price:
           type: number
           format: double
         timestamp:
