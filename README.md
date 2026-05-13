@@ -55,4 +55,4 @@ La calidad no fue delegada, sino supervisada: cada sugerencia fue validada media
 
 ---
 
-*Desarrollado para la Prueba Técnica de Linktic - Senior/Tech Lead Edition.*
+*Desarrollado por Daniel Eduardo Jimenez para la Prueba Técnica de Linktic - Senior/Tech Lead Edition.*
